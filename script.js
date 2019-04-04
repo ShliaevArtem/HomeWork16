@@ -1,7 +1,5 @@
-var start = document.querySelector('.start');
-var stop = document.querySelector('.stop');
+var button = document.querySelector('.start');
 var reset = document.querySelector('.reset');
-var repeat = document.querySelector('.repeat');
 var lap = document.querySelector('.lap');
 var lapContainer = document.querySelector('.lapContainer');
 var mil = document.querySelector('.milis');
@@ -10,10 +8,8 @@ var min = document.querySelector('.mins');
 var first_time = true;
 var flag = false;
 
-stop.style.display = 'none';
 lap.style.display = 'none';
 reset.style.display = 'none';
-repeat.style.display = 'none';
 
 function createTimeSection(timeType) { 
     var lapTime = document.createElement('div');
@@ -41,18 +37,12 @@ function createTimeBlock(type) {
 }
 
 function displayStopButton() {
-    start.style.display = 'none';
-    stop.style.display = 'block';
     lap.style.display = 'block';
     reset.style.display = 'block';
-    repeat.style.display = 'none';
 }
 
 function displayStartButton() {
-    start.style.display = 'none';
-    stop.style.display = 'none';
     lap.style.display = 'block';
-    repeat.style.display = 'block';
     reset.style.display = 'block';
 }
 
@@ -60,7 +50,7 @@ function startStopwatch() {
     flag = true;
 
     if (first_time) {
-      initialDate = new Date;
+      initialDate = new Date();
       first_time = false;
     } else {
       initialDate.setMilliseconds(initialDate.getMilliseconds() + (new Date - pauseTime));
@@ -131,12 +121,8 @@ function resetTimer() {
     flag = false;
     first_time = true;
     clearInterval(timerId);
-
-    start.style.display = 'block';
-    stop.style.display = 'none';
     lap.style.display = 'none';
     reset.style.display = 'none';
-    repeat.style.display = 'none';
 
     mil.innerHTML = '00';
     min.innerHTML = '00';
@@ -145,13 +131,34 @@ function resetTimer() {
     document.querySelector('.lapContainer').innerHTML = '';
 }
 
-start.addEventListener('click', startStopwatch);
-start.addEventListener('click', displayStopButton);
-start.addEventListener('click', displayTimer);
+button.onclick = function() {
+var elem = button.getAttribute('data-state');
+
+    switch (elem) {
+        case 'play': 
+            startStopwatch();
+            displayStopButton();
+            displayTimer();
+            button.setAttribute('data-state', 'stop');
+            button.innerHTML = 'Остановить';
+            break;
+
+        case 'stop':
+            stopTimer();
+            displayStartButton();
+            button.setAttribute('data-state', 'repeat');
+            button.innerHTML = 'Возобновить';
+            break;
+
+        case 'repeat':
+            startStopwatch();
+            displayStopButton();
+            displayTimer();
+            button.setAttribute('data-state', 'stop');
+            button.innerHTML = 'Остановить';
+            break;
+    }
+  };
+
 lap.addEventListener('click', newLap);
-stop.addEventListener('click', stopTimer);
-stop.addEventListener('click', displayStartButton);
 reset.addEventListener('click', resetTimer);
-repeat.addEventListener('click', startStopwatch);
-repeat.addEventListener('click', displayStopButton);
-repeat.addEventListener('click', displayTimer);
